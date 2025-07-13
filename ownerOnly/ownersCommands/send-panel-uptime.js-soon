@@ -1,0 +1,87 @@
+const {
+    SlashCommandBuilder,
+    StringSelectMenuBuilder,
+    StringSelectMenuOptionBuilder,
+    EmbedBuilder,
+    ActionRowBuilder,
+    ButtonStyle,
+    ButtonBuilder
+} = require("discord.js");
+const { Database } = require("st.db");
+
+const db = new Database("/database/data");
+const setting = new Database("/database/settingsdata/setting");
+const image = new Database("/database/settingsdata/image");
+
+module.exports = {
+    ownersOnly: true,
+    data: new SlashCommandBuilder()
+        .setName('send-maker-uptime')
+        .setDescription(`ارسال بانل الابتايم الميكرات`),
+    async execute(interaction) {
+        await interaction.deferReply({ ephemeral: true });
+
+        let price1 = await setting.get(`balance_price_${interaction.guild.id}`) ?? 5000;
+        let logroom = await setting.get(`log_room_${interaction.guild.id}`);
+        let probot = await setting.get(`probot_${interaction.guild.id}`);
+        let clientrole = await setting.get(`client_role_${interaction.guild.id}`);
+        let message5 = await setting.get(`message7_${interaction.guild.id}`);
+        let image5 = await image.get(`image5_${interaction.guild.id}`);
+        let uptimeroom1 = await setting.get(`uptimeroom_${interaction.guild.id}`);
+
+        if (!price1 || !logroom || !probot || !clientrole || !uptimeroom1) {
+            return interaction.editReply({ content: `**لم يتم تحديد الاعدادات**` });
+        }
+    let uptimeroom323 = interaction.guild.channels.cache.find(ch => ch.id == uptimeroom1)
+            let uptimeEmbed = new EmbedBuilder()
+                .setTitle(`**بانل شراء الابتايم**`)
+                .setThumbnail(interaction.guild.iconURL())
+            .setTimestamp()
+                .setTimestamp()
+                .setThumbnail(interaction.guild.iconURL({ dynamic: true }))
+                if (message5){
+                    let message1 = message5.replace(/\\n/g, '\n');
+                    uptimeEmbed.setDescription(`${message1}`)
+                }
+                if (image5){
+                    uptimeEmbed.setImage(`${image5}`)
+                }
+
+            const select = new StringSelectMenuBuilder()
+                .setCustomId('uptime_select')
+                .setPlaceholder(' 🛒 اختر خطة لتي تساعدك')
+                .addOptions(
+                    new StringSelectMenuOptionBuilder()
+                        .setLabel(`ابتايم اسبوعي`)
+                        .setDescription(`شراء ابتايم لمدة اسبوع واحد فقط مقابل 35 عملة`)
+                        .setEmoji(`🛩`)
+                        .setValue('weekly_uptime'),
+                    new StringSelectMenuOptionBuilder()
+                        .setLabel(`ابتايم شهري`)
+                        .setDescription(`شراء ابتايم لمدة شهر واحد مقابل 100 عملة`)
+                        .setEmoji(`🚀`)
+                        .setValue('monthly_uptime'),
+                    new StringSelectMenuOptionBuilder()
+                        .setLabel(`حذف رابط`)
+                        .setDescription(`حذف رابط خاص بك من الابتايم`)
+                        .setEmoji(`⛔`)
+                        .setValue('delete_uptime')
+                );
+
+            const row3 = new ActionRowBuilder()
+                .addComponents(select);
+
+        const free = new ButtonBuilder()
+            .setCustomId(`showup`)
+            .setEmoji('❕')
+            .setStyle(ButtonStyle.Primary);
+        
+        const row4 = new ActionRowBuilder()
+        .addComponents(free,);
+
+            await uptimeroom323.send({embeds: [uptimeEmbed],components: [row3,row4]});
+
+            return interaction.editReply({ content: `**تم ارسال بانل الابتايم**` });
+        
+    }
+};

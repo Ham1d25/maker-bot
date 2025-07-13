@@ -1,0 +1,105 @@
+const { SlashCommandBuilder, EmbedBuilder , PermissionsBitField, ActionRowBuilder,ButtonBuilder,MessageComponentCollector,ButtonStyle, Embed } = require("discord.js");
+const { Database } = require("st.db")
+const tokens = new Database("/tokens/tokens")
+module.exports = {
+    ownersOnly:true,
+    data: new SlashCommandBuilder()
+    .setName('subscription-bot-time')
+    .setDescription('معرفة الوقت المتبقي اشتراك')
+    .addStringOption(Option => Option
+        .setName(`type`)
+        .setDescription(`نوع البوت`)
+        .setRequired(true)
+        .addChoices(
+            {
+                name:`Broadcast` , value:`Bc`
+            },
+            {
+                name:`Tax` , value:`tax`
+            },
+            {
+                name:`Scammers` , value:`scam`
+            },
+            {
+                name:`Seller` , value:`seller`
+            },
+            {
+                name:`Order` , value:`order`
+            },
+            {
+                name:`Shop` , value:`shop`
+            },
+            {
+                name:`Logs` , value:`logs`
+            },
+           {
+                name:`Azkar` , value:`azkar`
+            },
+            {
+                name:`Tickets` , value:`ticket`
+            },
+            {
+                name:`Suggestions` , value:`suggestions`
+            },
+            {
+                name:`Feedback` , value:`feedback`
+            },
+            {
+                name:`Probot Premium` , value:`probot`
+            },
+            {
+                name:`Blacklist` , value:`blacklist`
+            },
+            {
+                name:`system` , value:`system`
+            },
+            {
+                name:`Protect` , value:`protect`
+            },
+            {
+                name:`Blacklist` , value:`blacklist`
+            },           
+            {
+                name:`Nadeko` , value:`nadeko`
+            },
+            {
+                name:`NormalBroadcast` , value:`Broadcast2`
+            },
+            {
+                name:`Credit` , value:`credit`
+            },
+            {
+                name:`Apply` , value:`apply`
+            },
+            {
+                name:`Autoline` , value:`autoline`
+            },
+            {
+                name:`all` , value:`all`
+            }
+        ))
+    .addStringOption(Option => Option
+        .setName(`clientid`)
+        .setDescription(`ايدي البوت`)
+        .setRequired(true))
+    ,
+    async execute(interaction) {
+        await interaction.deferReply({ephemeral:true})
+       const type = interaction.options.getString(`type`)
+       const clientIds = interaction.options.getString(`clientid`)
+       const subsearch = await tokens.get(`${type}`)
+       const serversearch = subsearch.find(su => su.clientId == clientIds)
+       if(!serversearch) {
+        return interaction.reply({content:`**لم يتم العثور على اشتراك بهذا الايدي**`})
+       }
+       const {timeleft} = serversearch
+       const doneembed = new EmbedBuilder()
+       .setFooter({text:interaction.user.username , iconURL:interaction.user.displayAvatarURL({dynamic:true})})
+        .setAuthor({name:interaction.guild.name , iconURL:interaction.guild.iconURL({dynamic:true})})
+        .setTimestamp(Date.now())
+        .setColor('#000000')
+        .setTitle(`**الوقت المتبقي من الاشتراك**`)
+        .setDescription(`**\`${Math.floor((timeleft / 60) / (60) / (24))}\` يوم تقريبا**`)
+       return interaction.editReply({embeds:[doneembed]})
+    }
+}

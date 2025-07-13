@@ -1,0 +1,35 @@
+const { SlashCommandBuilder, EmbedBuilder , PermissionsBitField, ActionRowBuilder,ButtonBuilder,MessageComponentCollector,ButtonStyle } = require("discord.js");
+const { Database } = require("st.db")
+const prices = new Database("/database/settingsdata/prices.json")
+const { clientId,owner,owner1,owner2} = require('../../config.json');
+module.exports = {
+    data: new SlashCommandBuilder()
+    .setName('change-price-sub')
+    .setDescription('تغيير سعر البوت')
+    .addStringOption(Option => 
+        Option
+        .setName('bot-type')
+        .setDescription('نوع البوت')
+        .addChoices(
+            {
+           
+                name:`Bot Maker Gold` , value:`bot_maker_premium`
+			},
+            {
+                name:`Bot Maker Dimond` , value:`bot_maker_ultimate`
+			}
+          )
+        .setRequired(true))
+        .addIntegerOption(Option => Option
+            .setName(`price`)
+            .setDescription(`السعر بالعملات`)
+            .setRequired(true)), // or false
+async execute(interaction) {
+    if (!owner.includes(interaction.user.id)) return;
+    await interaction.deferReply({ephemeral:false})
+    const Bot_Type = interaction.options.getString(`bot-type`)
+    const price = interaction.options.getInteger(`price`)
+   await prices.set(`${Bot_Type}_price_${interaction.guild.id}` , price)
+   return interaction.editReply({content:`**تم تغيير سعر البوت بنجاح**`})
+}
+}

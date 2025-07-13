@@ -1,0 +1,50 @@
+const { SlashCommandBuilder, EmbedBuilder, PermissionsBitField, ActionRowBuilder, ButtonBuilder, imageComponentCollector, ButtonStyle } = require("discord.js");
+const { Database } = require("st.db")
+const image = new Database("/database/settingsdata/image")
+module.exports = {
+    ownersOnly:true,
+    data: new SlashCommandBuilder()
+        .setName('set-image')
+        .setDescription('تصطيب صور البانل')
+        .addStringOption(text => text
+            .setName(`bot-image`)
+            .setDescription(`صورة بانل البوتات`)
+            .setRequired(false))
+        .addStringOption(text => text
+            .setName(`maker-image`)
+            .setDescription(`صورة بانل الاشتراكات`)
+            .setRequired(false))
+       
+        .addStringOption(text => text
+            .setName(`dashbord-image`)
+            .setDescription(`صورة بانل الداش بورد`)
+            .setRequired(false))
+            .addStringOption(text => text
+                .setName(`uptime-image`)
+                .setDescription(`صورة بانل الابتايم`)
+                .setRequired(false))
+            ,
+    async execute(interaction) {
+        await interaction.deferReply({ ephemeral: true })
+        let botimage = interaction.options.getString(`bot-image`)
+        let makerimage = interaction.options.getString(`maker-image`)
+       
+        let dashbordimage = interaction.options.getString(`dashbord-image`)
+        let uptimeimage = interaction.options.getString(`uptime-image`)
+        if (botimage) {
+            await image.set(`image0_${interaction.guild.id}`, botimage)
+        }
+        if (makerimage) {
+            await image.set(`image1_${interaction.guild.id}`, makerimage)
+        }
+      
+        if (dashbordimage) {
+        await image.set(`image3_${interaction.guild.id}`, dashbordimage)
+        }
+        if (uptimeimage) {
+            await image.set(`image5_${interaction.guild.id}`, uptimeimage)
+            }
+        if (!botimage && !makerimage &&!uptimeimage && !dashbordimage) return interaction.editReply({ content: `**الرجاء تحديد اعداد واحد على الاقل**` })
+        return interaction.editReply({ content: `**تم تحديد الاعدادات بنجاح**` })
+    }
+}

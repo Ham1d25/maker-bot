@@ -1,0 +1,47 @@
+const { SlashCommandBuilder,SelectMenuBuilder,StringSelectMenuBuilder, StringSelectMenuOptionBuilder, EmbedBuilder , PermissionsBitField, ActionRowBuilder,ButtonBuilder,MessageComponentCollector,ButtonStyle, Embed } = require("discord.js");
+const { Database } = require("st.db")
+const db = new Database("/database/data")
+const setting = new Database("/database/settingsdata/setting")
+const image = new Database("/database/settingsdata/image")
+
+module.exports = {
+    ownersOnly:true,
+    data: new SlashCommandBuilder()
+    .setName('send-maker-subscribe')
+    .setDescription(`ارسال بانل اشتراكات الميكرات`),
+async execute(interaction) {
+    await interaction.deferReply({ephemeral:true})
+    let price1 = await setting.get(`price1`)
+    let logroom = await setting.get(`log_room_${interaction.guild.id}`)
+    let probot =  await setting.get(`probot_${interaction.guild.id}`)
+    let clientrole = await setting.get(`client_role_${interaction.guild.id}`)
+    let message1 =  await setting.get(`message1_${interaction.guild.id}`)
+    let line = await image.get(`image1_${interaction.guild.id}`)
+    let subscriberoo =  setting.get(`subscribe_room_${interaction.guild.id}`)
+    //if(!price1||! subscriberoo || !logroom || !probot || !clientrole ||!message1 ||!line ) return interaction.editReply({content:`**لم يتم تحديد الاعدادات**`})
+    let subscriberoom = interaction.guild.channels.cache.find(ch => ch.id == subscriberoo)
+     let embed2 = new EmbedBuilder()
+    .setTitle(`**> - بانل اشتراك في بوت الميكر **`)
+    .setDescription(`${message1}`)
+    .setTimestamp()
+.setImage(`${line}`)
+        const select2 = new StringSelectMenuBuilder()
+        .setCustomId('select_bot')
+        .setPlaceholder('الاشتراك في بوت الميكر')
+        .addOptions(
+         
+            new StringSelectMenuOptionBuilder()
+            .setLabel('GOLD')
+            .setDescription('ألأشــتــراك فــي بــوت الــمــيــكــر الذهبي')
+.setEmoji('💎')
+            .setValue('Bot_Maker_Premium_Subscribe'),
+            new StringSelectMenuOptionBuilder()
+            .setLabel('اﻋـادۃ ۛتــعــيــيــن')
+            .setDescription('عــمــل اﻋـادۃ ۛتــعــيــيــن لــلاخــتــيـار')
+.setEmoji('🔧')
+            .setValue('Reset_Selected'),);
+            const row2 = new ActionRowBuilder().addComponents(select2)
+        subscriberoom.send({embeds:[embed2],components:[row2]})
+    return interaction.editReply({content:`**تم ارسال بانل الاشتراكات**`})
+}
+}
